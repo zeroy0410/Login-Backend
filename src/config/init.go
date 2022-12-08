@@ -1,8 +1,9 @@
 package config
 
 import (
-	"github.com/spf13/viper"
 	"log"
+
+	"github.com/spf13/viper"
 )
 
 type Config interface {
@@ -25,7 +26,7 @@ func Initialize() error {
 }
 
 func initViper() error {
-	viper.SetConfigName("config")
+	viper.SetConfigName("config/config.yaml")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
 	if err := viper.ReadInConfig(); err != nil {
@@ -33,8 +34,8 @@ func initViper() error {
 		return err
 	}
 	err := readConfig()
-	if err != nil{
-		log.Println("Could not read config file, ",err)
+	if err != nil {
+		log.Println("Could not read config file, ", err)
 		return err
 	}
 	return nil

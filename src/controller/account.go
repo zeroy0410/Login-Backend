@@ -1,17 +1,19 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"Login-Backend/src/repository"
 	"Login-Backend/src/model"
+	"Login-Backend/src/repository"
+
+	"github.com/gin-gonic/gin"
 )
 
-func init(){
-	RegisterApiRoute(func (router *gin.RouterGroup)  {
-		AccountRouter:=router.Group("/account",DontLoginRequired())
+func init() {
+	RegisterApiRoute(func(router *gin.RouterGroup) {
+		AccountRouter := router.Group("/account", DontLoginRequired())
 		{
 			// AccountRouter.POST("/join",AccountJoinHandler);
-			AccountRouter.POST("/login",AccountLoginHandler);
+			AccountRouter.POST("/login", AccountLoginHandler)
+			AccountRouter.GET("/haha", AccounthahaHandler)
 		}
 		AuthorizedAccountRouter := router.Group("/account", LoginRequired())
 		{
@@ -24,8 +26,14 @@ func init(){
 }
 
 type LoginRequest struct {
-	Account		string 	`json:"account"`
-	Password	string 	`json:"password"`
+	Account  string `json:"account"`
+	Password string `json:"password"`
+}
+
+func AccounthahaHandler(ctx *gin.Context) {
+	ctx.JSON(200, gin.H{
+		"message": "haha",
+	})
 }
 
 func AccountLoginHandler(ctx *gin.Context) {
@@ -36,7 +44,8 @@ func AccountLoginHandler(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
-	user, err := repository.ValidateUserPassword(req.Account,req.Password)
+	// fmt.Println("haha: "+req.Account)
+	user, err := repository.ValidateUserPassword(req.Account, req.Password)
 	if err != nil {
 		InternalFailedWithMessage(ctx, err.Error())
 		ctx.Abort()

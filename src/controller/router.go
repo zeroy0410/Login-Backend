@@ -15,7 +15,7 @@ func RegisterApiRoute(functions ...RoutingRegisterFunc) {
 
 func SetupRouting(router *gin.Engine) {
 	router.Use(PrepareInfo())
-	apiRouter := router.Group("localhost:8080")
+	apiRouter := router.Group("")
 
 	for _, routingFunction := range routingFunctions {
 		routingFunction(apiRouter)
