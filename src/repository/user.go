@@ -34,11 +34,11 @@ func ValidateUserPassword(account string, password string) (model.User, error) {
 func GetUserByID(id uint) (model.User, error) {
 	var user model.User
 	if err := Database.Model(&model.User{}).
-		Where("ID = ?",id).
-		First(&user).Error;err!=nil {
-			return user,err
+		Where("ID = ?", id).
+		First(&user).Error; err != nil {
+		return user, err
 	}
-	return user,nil
+	return user, nil
 }
 
 func CreateUser(user *model.User) error {

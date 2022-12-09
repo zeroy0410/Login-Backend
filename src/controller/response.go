@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"net/http"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 const (
@@ -15,9 +15,9 @@ const (
 )
 
 type Response struct {
-	Code 	int 		`json:"code"`
-	Data 	interface{}	`json:"data"`
-	Message string		`json:"message"`
+	Code    int         `json:"code"`
+	Data    interface{} `json:"data"`
+	Message string      `json:"message"`
 }
 
 func sendResponse(ctx *gin.Context, code int, data interface{}, msg string) {
@@ -32,7 +32,7 @@ func Ok(ctx *gin.Context) {
 	sendResponse(ctx, SigOk, nil, "succeeded")
 }
 
-func OkWithMessage(ctx *gin.Context,msg string) {
+func OkWithMessage(ctx *gin.Context, msg string) {
 	sendResponse(ctx, SigOk, nil, msg)
 }
 
