@@ -1,21 +1,15 @@
 package model
 
+import (
+	"gorm.io/gorm"
+)
+
 type User struct {
-	ID				uint		`json:"id"`
+	// ID				uint		`gorm:"unique" json:"id"`
+	Uid				string		`gorm:"unique" json:"uid"`
 	Admin			bool 		`json:"admin"`
 	Password		string 		`json:"password"`
-	NickName		string 		`json:"nick-name"`
-	Email			string 		`json:"email"`
-}
-
-var Zeroy User
-
-func SetZeroy(){
-	Zeroy=User{
-		2020150384,
-		true,
-		"123456",
-		"zeroy",
-		"zeroy0410@gmail.com",
-	}
+	NickName		string 		`gorm:"unique" json:"nick-name"`
+	Email			string 		`gorm:"unique" json:"email"`
+	gorm.Model
 }

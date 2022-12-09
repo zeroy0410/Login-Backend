@@ -3,22 +3,26 @@ package controller
 import (
 	"Login-Backend/src/model"
 	"Login-Backend/src/repository"
+	"Login-Backend/src/utility"
+	"fmt"
+
+	// "fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/copier"
 )
 
 func init() {
 	RegisterApiRoute(func(router *gin.RouterGroup) {
 		AccountRouter := router.Group("/account", DontLoginRequired())
 		{
-			// AccountRouter.POST("/join",AccountJoinHandler);
+			AccountRouter.POST("/join", AccountJoinHandler)
 			AccountRouter.POST("/login", AccountLoginHandler)
-			AccountRouter.GET("/haha", AccounthahaHandler)
 		}
 		AuthorizedAccountRouter := router.Group("/account", LoginRequired())
 		{
 			AuthorizedAccountRouter.DELETE("/logout", AccountLogoutHandler)
-			// AuthorizedAccountRouter.GET("/profile", AccountGetSelfProfileHandler)
+			AuthorizedAccountRouter.GET("/profile", AccountGetSelfProfileHandler)
 			// AuthorizedAccountRouter.PATCH("/profile", AccountChangeProfileHandler)
 			// AuthorizedAccountRouter.PATCH("/change-password", AccountChangePasswordHandler)
 		}
@@ -30,10 +34,51 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
-func AccounthahaHandler(ctx *gin.Context) {
-	ctx.JSON(200, gin.H{
-		"message": "haha",
-	})
+type JoinRequest struct {
+	Uid      string `json:"uid"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
+	NickName string `json:"nick-name"`
+}
+
+func AccountJoinHandler(ctx *gin.Context) {
+	var req JoinRequest
+	if err := ctx.ShouldBind(&req); err != nil {
+		InternalFailedWithMessage(ctx, err.Error())
+		ctx.Abort()
+		return
+	}
+	if !utility.VerifyEmailFormat(req.Email) ||
+		!utility.VerifyPasswordFormat(req.Password) {
+		InternalFailedWithMessage(ctx, "invalid format")
+		ctx.Abort()
+		return
+	}
+	var user model.User
+	err := copier.Copy(&user, req)
+	if err != nil {
+		InternalFailedWithMessage(ctx, err.Error())
+		ctx.Abort()
+		return
+	}
+	user.Admin = false
+	hashedPassword, err := utility.HashPassword(user.Password)
+	if err != nil {
+		InternalFailedWithMessage(ctx, err.Error())
+		ctx.Abort()
+		return
+	}
+	user.Password = hashedPassword
+	fmt.Println("Before User is: ", user)
+	err = repository.CreateUser(&user)
+	fmt.Println("Now User is: ", user)
+	if err != nil {
+		InternalFailedWithMessage(ctx, err.Error())
+		ctx.Abort()
+		return
+	}
+	loginUser(ctx, user)
+	Ok(ctx)
 }
 
 func AccountLoginHandler(ctx *gin.Context) {
@@ -44,7 +89,6 @@ func AccountLoginHandler(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
-	// fmt.Println("haha: "+req.Account)
 	user, err := repository.ValidateUserPassword(req.Account, req.Password)
 	if err != nil {
 		InternalFailedWithMessage(ctx, err.Error())
@@ -53,6 +97,23 @@ func AccountLoginHandler(ctx *gin.Context) {
 	}
 	loginUser(ctx, user)
 	Ok(ctx)
+}
+
+func AccountGetSelfProfileHandler(ctx *gin.Context) {
+	userID, err := utility.GetUintFromContext(ctx, "id")
+	if err != nil {
+		InternalFailedWithMessage(ctx, err.Error())
+		ctx.Abort()
+		return
+	}
+	user, err := repository.GetUserByID(userID)
+	if err != nil {
+		InternalFailedWithMessage(ctx, err.Error())
+		ctx.Abort()
+		return
+	}
+	user.Password = "It's a secret"
+	OkWithData(ctx, user)
 }
 
 func AccountLogoutHandler(ctx *gin.Context) {
