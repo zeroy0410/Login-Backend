@@ -1,0 +1,8 @@
+# config bbolt
+cache:
+  path: ./token_cache
+
+token:
+  signing_key: 998244353
+  buffer_time: 21600
+  expires_time: 86400
