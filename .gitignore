@@ -4,3 +4,4 @@ token_cache
 backend
 src/src
 *.exe
+*.db
