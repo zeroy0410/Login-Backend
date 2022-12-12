@@ -24,5 +24,15 @@ func Initialize() error {
     if err != nil {
         return err
     }
+    err = tokenCache.Update(func(tx *bbolt.Tx) error {
+        _, err = tx.CreateBucketIfNotExists([]byte("email"))
+        if err != nil {
+            return err
+        }
+        return nil
+    })
+    if err != nil {
+        return err
+    }
     return nil
 }

@@ -2,8 +2,9 @@ package utility
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 var ErrIDIsBroken = errors.New("id is broken")

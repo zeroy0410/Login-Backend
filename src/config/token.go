@@ -1,8 +1,10 @@
 package config
 
 import (
-    "errors"
-    "github.com/spf13/viper"
+	"errors"
+	// "fmt"
+
+	"github.com/spf13/viper"
 )
 
 type Token struct {
@@ -32,6 +34,7 @@ func (t *Token) Load() error {
         return errors.New("could not read token config")
     }
     err := configReader.Unmarshal(&t)
+    // fmt.Println("SigningKey"+t.SigningKey)
     if err != nil {
         return err
     }

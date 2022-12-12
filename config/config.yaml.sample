@@ -6,3 +6,12 @@ token:
   signing_key: 998244353
   buffer_time: 21600
   expires_time: 86400
+
+captcha:
+  secret_key: 
+
+email:
+  smtp_address: 
+  smtp_url: 
+  email_from: 
+  email_password: 
